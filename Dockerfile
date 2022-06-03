@@ -70,3 +70,21 @@ RUN apt-get update && \
     rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y && \
     cd $COLCON_WS && \
     colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+# build moveit2_tutorials
+RUN apt-get update && \
+    export LANG=en_US.UTF-8 && \
+    export COLCON_WS=/app/ws_moveit2 && \
+    . $COLCON_WS/install/setup.bash && \
+    apt-get install -y python3-colcon-mixin && \
+    colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml && \
+    colcon mixin update default && \
+    cd $COLCON_WS/src && \
+    git clone https://github.com/ros-planning/moveit2_tutorials.git -b galactic && \
+    # echo "Running vcs import..." && \
+    vcs import < moveit2_tutorials/moveit2_tutorials.repos || true && \
+    # echo "Installing dependencies with rosdep install!" && \
+    rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y && \
+    cd $COLCON_WS && \
+    colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release
+    # colcon build --mixin release
