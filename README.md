@@ -15,7 +15,7 @@ I wasn't satisfied with MoveIt2!'s build instructions, so I made my own that inc
     sudo add-apt-repository universe
     sudo apt-get update
     sudo apt-get install -y curl gnupg lsb-release
-    sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+    sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
     ```
 2.  Run the following to install dependencies for building MoveIt2!
@@ -70,7 +70,21 @@ I wasn't satisfied with MoveIt2!'s build instructions, so I made my own that inc
     cd $COLCON_WS
     colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release
     ```
-
+5. Build MoveIt2! tutorials
+    ```bash
+    sudo apt-get update
+    export LANG=en_US.UTF-8
+    export COLCON_WS=/app/ws_moveit2
+    . $COLCON_WS/install/setup.bash
+    cd $COLCON_WS/src
+    git clone https://github.com/ros-planning/moveit2_tutorials.git -b $ROS_DISTRO
+    # echo "Running vcs import..."
+    vcs import < moveit2_tutorials/moveit2_tutorials.repos || true
+    # echo "Installing dependencies with rosdep install!"
+    rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
+    cd $COLCON_WS
+    colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release
+    ```
 # Uninstall
 If anything goes wrong, the following should completely remove ROS2 from your system if you follow our installation instructions.
 ```bash
